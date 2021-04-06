@@ -18,6 +18,7 @@ typedef struct locks{
 // keeps track of condition variable created by user
 typedef struct conds{
     int condId;
+    int lockId;
     conds *next;
 } conds;
 
@@ -87,56 +88,139 @@ int P2_Startup(void *arg)
     return 0;
 }
 
-void checkLock(int lid){
+// NOTE: Not sure if locks are needed to do this since these are global lists
 
+int checkLock(int lid){
+    locks *temp;
+    temp = lockHead;
+    while(temp->next != NULL){
+        if(temp->lockId == lid){
+            return 1;
+        }
+        temp = temp->next;
+    }
+    return 0;
 }
 
-void checkCond(int vid){
-
+int checkCond(int vid){
+    conds *temp;
+    temp = condHead;
+    while(temp->next != NULL){
+        if(temp->condId == lid){
+            return 1;
+        }
+        temp = temp->next;
+    }
+    return 0;
 }
 
 int P2_lockCreate(char *name, int *lid){
+    int rc;
+    locks *newLock = (locks *)malloc(sizeof(locks));
+    newLock->next = headLock->next;
+    headLock->next = newLock;
 
+    rc = P1_LockCreate(name, lid);
+
+    newLock->lockId = *lid;
+    return rc;
 }
 
 int P2_lockFree(int lid){
-
+    int rc;
+    if(!checkLock(lid)){
+        return P1_INVALID_LID;
+    }
+    rc = P1_LockFree(lid);
+    return rc;
 }
 
 int P2_lockName(char *name, int lid){
-
+    int rc;
+    if(!checkLock(lid)){
+        return P1_INVALID_LID;
+    }
+    rc = P1_LockName(lid, name, P1_MAXNAME);
+    return rc;
 }
 
 int P2_lockAcquire(int lid){
-
+    int rc;
+    if(!checkLock(lid)){
+        return P1_INVALID_LID;
+    }
+    rc = P1_Lock(lid);
+    return rc;
 }
 
 int P2_lockRelease(int lid){
-
+    int rc;
+    if(!checkLock(lid)){
+        return P1_INVALID_LID;
+    }
+    rc = P1_Unlock(lid);
+    return rc;
 }
 
 int P2_condCreate(char *name, int lid, int *vid){
+    int rc;
+    if(!checkLock(lid)){
+        return P1_INVALID_LID;
+    }
+    conds *newCond = (conds *)malloc(sizeof(conds));
+    newCond->next = headCond->next;
+    headCond->next = newCond;
 
+    rc = P1_CondCreate(name, lid, vid);
+
+    newCond->lockId = *lid;
+    newCond->condId = *vid;
+    return rc;
 }
 
 int P2_condFree(int vid){
-
+    int rc;
+    if(!checkCond(vid)){
+        return P1_INVALID_VID;
+    }
+    rc = P1_CondFree(vid);
+    return rc;
 }
 
 int P2_condName(int vid, char *name){
-
+    int rc;
+    if(!checkCond(vid)){
+        return P1_INVALID_VID;
+    }
+    rc = P1_CondName(vid, name);
+    return rc;
 }
 
 int P2_condWait(int vid){
-
+    int rc;
+    if(!checkCond(vid)){
+        return P1_INVALID_VID;
+    }
+    rc = P1_Wait(vid);
+    return rc;
 }
 
 int P2_condSignal(int vid){
-
+    int rc;
+    if(!checkCond(vid)){
+        return P1_INVALID_VID;
+    }
+    rc = P1_Signal(vid);
+    return rc;
 }
 
 int P2_condBraodcast(int vid){
-
+    int rc;
+    if(!checkCond(vid)){
+        return P1_INVALID_VID;
+    }
+    rc = P1_Broadcast(vid);
+    return rc;
 }
 
 static void lockCreateStub(USLOSS_Sysargs *sysargs){
