@@ -87,4 +87,127 @@ int P2_Startup(void *arg)
     return 0;
 }
 
-int P2_lockCreate()
+void checkLock(int lid){
+
+}
+
+void checkCond(int vid){
+
+}
+
+int P2_lockCreate(char *name, int *lid){
+
+}
+
+int P2_lockFree(int lid){
+
+}
+
+int P2_lockName(char *name, int lid){
+
+}
+
+int P2_lockAcquire(int lid){
+
+}
+
+int P2_lockRelease(int lid){
+
+}
+
+int P2_condCreate(char *name, int lid, int *vid){
+
+}
+
+int P2_condFree(int vid){
+
+}
+
+int P2_condName(int vid, char *name){
+
+}
+
+int P2_condWait(int vid){
+
+}
+
+int P2_condSignal(int vid){
+
+}
+
+int P2_condBraodcast(int vid){
+
+}
+
+static void lockCreateStub(USLOSS_Sysargs *sysargs){
+    int lid;
+    char *name = (char *)sysargs->arg1;
+    int rc = P2_lockCreate(name, &lid);
+    sysargs->arg1 = lid;
+    sysargs->arg4 = rc;
+}
+
+static void lockFreeStub(USLOSS_Sysargs *sysargs){
+    int lid = (int)sysargs->arg1;
+    int rc = P2_lockFree(lid);
+    sysargs->arg4 = rc;
+}
+
+static void lockNameStub(USLOSS_Sysargs *sysargs){
+    int lid = (int)sysargs->arg1;
+    char *name = (char *)sysargs->arg2;
+    int rc = P2_lockName(name, lid);
+    sysargs->arg4 = rc;
+}
+
+static void lockAcquireStub(USLOSS_Sysargs *sysargs){
+    int lid = (int)sysargs->arg1;
+    int rc = P2_lockAcquire(lid);
+    sysargs->arg4 = rc;
+}
+
+static void lockReleaseStub(USLOSS_Sysargs *sysargs){
+    int lid = (int)sysargs->arg1;
+    int rc = P2_lockRelease(lid);
+    sysargs->arg4 = rc;
+}
+
+static void condCreateStub(USLOSS_Sysargs *sysargs){
+    char *name = (char *)sysargs->arg1;
+    int lid = (int)sysargs->arg2;
+    int vid;
+    int rc = P2_condCreate(name, lid, &vid);
+    sysargs->arg1 = vid;
+    sysargs->arg4 = rc;
+}
+
+static void condFreeStub(USLOSS_Sysargs *sysargs){
+    int vid = (int)sysargs->arg1;
+    int rc = P2_condFree(vid);
+    sysargs->arg4 = rc;
+}
+
+static void condNameStub(USLOSS_Sysargs *sysargs){
+    int vid = (int)sysargs->arg1;
+    char *name = (char *)sysargs->arg2;
+    int rc = P2_condName(vid, name);
+    sysargs->arg4 = rc;
+}
+
+static void condWaitStub(USLOSS_Sysargs *sysargs){
+    int vid = (int)sysargs->arg1;
+    int rc = P2_condWait(vid);
+    sysargs->arg4 = rc;
+}
+
+static void condSignalStub(USLOSS_Sysargs *sysargs){
+    int vid = (int)sysargs->arg1;
+    int rc = P2_condSignal(vid);
+    sysargs->arg4 = rc;
+}
+
+static void condBroadcastStub(USLOSS_Sysargs *sysargs){
+    int vid = (int)sysargs->arg1;
+    int rc = P2_condBroadcast(vid);
+    sysargs->arg4 = rc;
+}
