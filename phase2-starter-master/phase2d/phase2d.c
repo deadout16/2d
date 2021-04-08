@@ -1,6 +1,7 @@
 
 #include <string.h>
 #include <stdlib.h>
+#include <stdio.h>
 #include <usloss.h>
 #include <phase1.h>
 #include <assert.h>
@@ -32,7 +33,7 @@ conds *condHead;
 int checkLock(int lid){
     locks *temp;
     temp = lockHead;
-    while(temp->next != NULL){
+    while(temp != NULL){
         if(temp->lockId == lid){
             return 1;
         }
@@ -44,7 +45,7 @@ int checkLock(int lid){
 int checkCond(int vid){
     conds *temp;
     temp = condHead;
-    while(temp->next != NULL){
+    while(temp != NULL){
         if(temp->condId == vid){
             return 1;
         }
@@ -56,11 +57,9 @@ int checkCond(int vid){
 int P2_lockCreate(char *name, int *lid){
     int rc;
     locks *newLock = (locks *)malloc(sizeof(locks));
-    newLock->next = lockHead->next;
-    lockHead->next = newLock;
-
+        newLock->next = lockHead->next;
+        lockHead->next = newLock;
     rc = P1_LockCreate(name, lid);
-
     newLock->lockId = *lid;
     return rc;
 }
@@ -74,12 +73,12 @@ int P2_lockFree(int lid){
     return rc;
 }
 
-int P2_lockName(char *name, int lid){
+int P2_lockName(char *name, int lid, int length){
     int rc;
     if(!checkLock(lid)){
         return P1_INVALID_LOCK;
     }
-    rc = P1_LockName(lid, name, P1_MAXNAME);
+    rc = P1_LockName(lid, name, length);
     return rc;
 }
 
@@ -179,7 +178,8 @@ static void lockFreeStub(USLOSS_Sysargs *sysargs){
 static void lockNameStub(USLOSS_Sysargs *sysargs){
     int lid = (int)sysargs->arg1;
     char *name = (char *)sysargs->arg2;
-    int rc = P2_lockName(name, lid);
+    int length = (int) sysargs->arg3;
+    int rc = P2_lockName(name, lid, length);
     sysargs->arg4 = (void*) rc;
 }
 
